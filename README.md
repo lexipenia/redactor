@@ -22,3 +22,6 @@ By default, text will be blacked out. However, simply enter `blackout = false` i
 
 4)
 ![Example 4](https://lexipenia.files.wordpress.com/2020/07/whatsapp-image-2020-07-06-at-19.11.15.jpeg)
+
+5)
+![Example 5](https://lexipenia.files.wordpress.com/2020/07/whatsapp-image-2020-07-06-at-22.11.27.jpeg)
