@@ -1,9 +1,13 @@
 # redactor
 A JavaScript tool for making <a href="https://en.wikipedia.org/wiki/Erasure_(artform)" target="_blank">erasure poetry</a> from websites.
 
-### Usage
+redactor can be downloaded as a Chrome extension [here](https://chrome.google.com/webstore/detail/redactor/bekajhbgpmifhhdmidjmcgiglahpmlgk).
 
-Copy the contents of `redactor.js` into the Chrome console and hit return. You can then click and drag to delete text.
+The source code of the extension is in the [redactor-extension](https://github.com/lexipenia/redactor/tree/master/redactor-extension) folder.
+
+### Console usage
+
+You can run redactor in the Chrome console by copying the contents of `redactor-console.js` and hitting return. You can then click and drag to delete text.
 
 The `blackout` variable lets you choose whether to blackout text with &#9608;&#9608;&#9608; or whiteout text.
 
