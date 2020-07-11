@@ -7,7 +7,7 @@ The source code of the extension is in the [redactor-extension](https://github.c
 
 ### Console usage
 
-You can run redactor in the Chrome console by copying the contents of `redactor-console.js` and hitting return. You can then click and drag to delete text.
+You can run redactor in the Chrome console by copy/pasting the contents of `redactor-console.js` and hitting return. You can then click and drag to delete text.
 
 The `blackout` variable lets you choose whether to blackout text with &#9608;&#9608;&#9608; or whiteout text.
 
