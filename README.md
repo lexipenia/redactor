@@ -13,6 +13,8 @@ The `blackout` variable lets you choose whether to blackout text with &#9608;&#9
 
 By default, text will be blacked out. However, simply enter `blackout = false` into the console to enable whiteout. Enter `blackout = true` to return to blackout mode.
 
+The console version does not support the "undo" function available on the Chrome extension.
+
 ### Examples
 
 1)
