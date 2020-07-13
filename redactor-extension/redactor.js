@@ -155,8 +155,6 @@ chrome.storage.local.get("redact_with", function(result) {
 // replace text within a node between two specified points
 function redactText(node, beginning, ending, tracking_number) {
 
-    console.log("Performing redaction number:", tracking_number);
-
     var text_to_redact = node.data.substring(beginning, ending);
     var replacement_bars = "";
     var replacement_character;
