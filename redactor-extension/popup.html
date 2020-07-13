@@ -16,11 +16,29 @@
         text-align: center;
         border-bottom-style: dashed
       }
+      input[type=radio] {
+        cursor: pointer;
+      }
       label {
         font-family: "American Typewriter", Courier, monospace;
         font-size: 18px;
         vertical-align: 1px;
         line-height: 2
+      }
+      .center {
+        display: flex;
+        justify-content: center;
+        padding: 10px
+      }
+      .button {
+        font-family: "American Typewriter", Courier, monospace;
+        font-size: 17px;
+        color: black;
+        background-color: #f1f1f1;
+        border: none;
+        border-radius: 8px;
+        padding: 5px 15px;
+        cursor: pointer
       }
       </style>
     <script src="popup.js"></script>
@@ -29,5 +47,8 @@
     <h1>redactor</h1>
     <input type="radio" name="replacement_selector" id="blackout_button"><label>Blackout</label><br>
     <input type="radio" name="replacement_selector" id="whiteout_button" value="white"><label>Whiteout</label><br>
+    <div class="center">
+      <button class="button" id="undo_button">Undo</button><br>
+    </div>
   </body>
 </html>

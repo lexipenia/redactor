@@ -1,4 +1,13 @@
-document.addEventListener("mouseup", redactor);
+// check if the listener has already been added; if it has,
+// then do nothing; if it hasn't, then add it
+
+var header_tag = document.getElementById("redaction_total");
+if (header_tag.getAttribute("listener") == "false") {
+    document.addEventListener("mouseup", function() {
+        redactor();
+    });
+    header_tag.setAttribute("listener", "true");
+}
 
 function redactor() {
 
@@ -21,6 +30,10 @@ function redactor() {
             redact_begin = full_selection.focusOffset;
             redact_end = full_selection.anchorOffset;
         }
+         // break execution if the user has clicked without selecting anything
+        else if (redact_begin == redact_end) {
+            return;
+        }
     }
     else if (direction == 4){   // Selection is LTR and spills over end of first user node
         beginning_node = user_begin;
@@ -35,21 +48,26 @@ function redactor() {
         redact_end = full_selection.anchorOffset;
     }
 
+     // set the "undo" tracking number for this batch of redactions + update in main document
+     var redaction_total = document.getElementById("redaction_total");
+     var undo_track_number = parseInt(redaction_total.getAttribute("total")) + 1;
+     redaction_total.setAttribute("total", undo_track_number);
+
     // carry out redaction
     if (direction == 0){
-        redactText(user_begin, redact_begin, redact_end);
+        redactText(user_begin, redact_begin, redact_end, undo_track_number);
     }
     else{
-        // redact the beginning and the ending nodes
-        redactText(beginning_node, redact_begin, beginning_node.length);
-        redactText(ending_node, 0, redact_end);
+        // redact the beginning and ending nodes
+        redactText(beginning_node, redact_begin, beginning_node.length, undo_track_number);
+        redactText(ending_node, 0, redact_end, undo_track_number);
 
         // redact all intervening nodes
         var ancestor = firstCommonAncestor(beginning_node, ending_node);
         var all_children = getLowestLevelChildren(ancestor);
         var intervening_nodes = getInterveningTextNodes(all_children, beginning_node, ending_node);
         intervening_nodes.forEach(node => {
-            redactText(node, 0, node.length);
+            redactText(node, 0, node.length, undo_track_number);
         });
     }
 }   
@@ -121,9 +139,11 @@ function getInterveningTextNodes(node_array, first_node, second_node) {
 }
 
 // determine replacement character from user preferences
-// whenever the script is run
+// whenever the script is run (NB. will be set before the main
+// "on_mouseup" function, whenever the extension popup is loaded
+// or the blackout/whiteout buttons are clicked)
 var replace_with;
-chrome.storage.local.get(["redact_with"], function(result) {
+chrome.storage.local.get("redact_with", function(result) {
     if (result.redact_with == "blackout") {
         replace_with = "blackout";
     }
@@ -133,9 +153,11 @@ chrome.storage.local.get(["redact_with"], function(result) {
 });
 
 // replace text within a node between two specified points
-function redactText(node, beginning, ending) {
+function redactText(node, beginning, ending, tracking_number) {
 
-    var text_to_redact = node.data.substring(beginning, ending).split('');
+    console.log("Performing redaction number:", tracking_number);
+
+    var text_to_redact = node.data.substring(beginning, ending);
     var replacement_bars = "";
     var replacement_character;
 
@@ -147,7 +169,7 @@ function redactText(node, beginning, ending) {
     }
 
     // Generate redacted string, preserving breaking spaces and new lines
-    text_to_redact.forEach(chr => {
+    text_to_redact.split('').forEach(chr => {
         if (chr == "\u0020") { // space
             replacement_bars = replacement_bars + "\u0020";
         }
@@ -161,5 +183,28 @@ function redactText(node, beginning, ending) {
             replacement_bars = replacement_bars + replacement_character;
         }
     });
+
+    // add tracker nodes + then perform the actual redaction
+    undoTracker(node, beginning, ending, tracking_number);
     node.replaceData(beginning, text_to_redact.length, replacement_bars);
+}
+
+// add hidden "tracker" elements to store original text for "undo" function
+function undoTracker(node, beginning, ending, tracking_number) {
+
+    // get the number of the text node within its parent
+    var node_number = 0;
+    var iterate_back = node.previousSibling;
+    while(iterate_back != null){
+        iterate_back = iterate_back.previousSibling;
+        node_number++;
+    }
+
+    // create the tracker tag and store all the required data
+    var tracker_tag = document.createElement("redactor");
+    tracker_tag.id = "redaction_number_" + tracking_number;
+    tracker_tag.setAttribute("node_number", node_number);
+    tracker_tag.setAttribute("original_text", node.data.substring(beginning, ending));
+    tracker_tag.setAttribute("redact_begin", beginning);
+    node.parentElement.appendChild(tracker_tag);
 }
